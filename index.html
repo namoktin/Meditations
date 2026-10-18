@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="sepia">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Suy Tưởng — Marcus Aurelius | Web Reader</title>
+  <meta name="description" content="Trang web đọc sách chuyên biệt cho Suy Tưởng (Meditations) của Marcus Aurelius - Bản phân tích 12 phần & bản dịch Gregory Hays">
+
+  <!-- Google Fonts: Lora, Be Vietnam Pro, Merriweather (100% full Vietnamese diacritics support) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Merriweather:ital,wght@0,300;0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Reading Progress Bar (Top of Window) -->
+  <div class="reading-progress-track">
+    <div class="reading-progress-fill" id="readingProgressFill"></div>
+  </div>
+
+  <div class="app-container">
+
+    <!-- Top Navigation Header -->
+    <header class="top-header">
+      <div class="header-left">
+        <button class="btn-icon" id="sidebarToggleBtn" title="Đóng / Mở Mục Lục (M)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+
+        <button class="btn-search-pill" id="openSearchBtn" title="Tìm kiếm (Ctrl+K)">
+          <span class="search-icon">🔍</span>
+          <span>Tìm kiếm...</span>
+          <span class="kbd-shortcut">Ctrl K</span>
+        </button>
+      </div>
+
+      <div class="header-center">
+        <div class="book-title-header">
+          <span>🏛️ Suy Tưởng</span>
+          <span class="sep">/</span>
+          <span class="current-ch" id="currentChTitleHeader">Đang tải...</span>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <!-- Quick Dark/Light Toggle -->
+        <button class="btn-icon" id="quickThemeToggleBtn" title="Chuyển chế độ Sáng / Tối">
+          <span id="quickThemeIcon">🌙</span>
+        </button>
+
+        <!-- Bookmark Current Chapter -->
+        <button class="btn-icon" id="bookmarkChBtn" title="Lưu dấu trang chương này (B)">
+          🔖
+        </button>
+
+        <!-- Flashcards Quick Launcher -->
+        <button class="btn-icon" id="openFlashcardsBtn" title="Mở bộ 40 Flashcard Ôn Tập">
+          🎴
+        </button>
+
+        <!-- Reading Preferences / Typography -->
+        <button class="btn-icon" id="openSettingsBtn" title="Cài đặt đọc sách (Font chữ, Màu nền, Kích thước)">
+          ⚙️
+        </button>
+
+        <!-- Distraction-Free Focus Mode -->
+        <button class="btn-icon" id="focusModeBtn" title="Chế độ tập trung đọc (F)">
+          👁️
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Workspace Layout -->
+    <div class="main-layout">
+      <!-- Mobile Backdrop for Sidebar -->
+      <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+      <!-- Left Sidebar: Table of Contents -->
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <div class="book-brand">
+            <div class="book-brand-icon">🏛️</div>
+            <div class="book-brand-info">
+              <h2>SUY TƯỞNG</h2>
+              <p>Marcus Aurelius • Gregory Hays</p>
+            </div>
+          </div>
+
+          <!-- Reading Progress Card -->
+          <div class="sidebar-progress-card">
+            <div class="progress-stat-header">
+              <span>Tiến độ đọc sách</span>
+              <span class="progress-stat-percent" id="progressStatPercent">0%</span>
+            </div>
+            <div class="progress-bar-outer">
+              <div class="progress-bar-inner" id="progressBarInner"></div>
+            </div>
+            <div style="margin-top: 6px; font-size: 0.73rem; color: var(--text-muted); display: flex; justify-content: space-between;">
+              <span id="progressStatText">0/25 chương</span>
+              <span style="cursor: pointer; text-decoration: underline;" onclick="window.location.hash='#readme'" title="Xem hướng dẫn đọc">Lộ trình đọc</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter input for chapters -->
+        <div class="sidebar-search-box">
+          <div class="search-input-wrap">
+            <span class="search-icon">🔎</span>
+            <input type="text" class="sidebar-search-input" id="sidebarSearchInput" placeholder="Lọc danh sách chương...">
+          </div>
+        </div>
+
+        <!-- Chapter list -->
+        <nav class="sidebar-toc" id="tocList">
+          <!-- Dynamically populated by app.js -->
+        </nav>
+      </aside>
+
+      <!-- Center Reader Workspace -->
+      <main class="reader-workspace" id="readerWorkspace">
+        <article class="reader-container" id="readerContainer">
+          <!-- Dynamically populated by app.js -->
+        </article>
+      </main>
+
+      <!-- Right Drawer: On-page Headings Outline & Notes -->
+      <aside class="page-outline-aside" id="pageOutlineAside">
+        <div class="outline-header">
+          <span>Mục lục trang</span>
+          <span>📑</span>
+        </div>
+        <ul class="outline-list" id="outlineList">
+          <!-- Dynamically populated by app.js -->
+        </ul>
+
+        <!-- Chapter Personal Reflection Box -->
+        <div class="chapter-note-box">
+          <div class="note-box-title">
+            <span>✍️ Ghi chú chiêm nghiệm</span>
+          </div>
+          <textarea 
+            class="chapter-note-textarea" 
+            id="chapterNoteTextarea" 
+            placeholder="Viết cảm nghĩ, bài học tâm đắc hoặc kế hoạch áp dụng của bạn vào đây..."
+          ></textarea>
+          <div class="note-saved-status" id="noteSavedStatus">Đã lưu tự động</div>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+
+  <!-- Exit Focus Mode Floating Pill -->
+  <button class="exit-focus-btn" id="exitFocusBtn">
+    <span>✕ Thoát chế độ tập trung (Esc)</span>
+  </button>
+
+  <!-- Search Modal (Ctrl + K) -->
+  <div class="modal-overlay" id="searchModal">
+    <div class="modal-content">
+      <div class="search-modal-header">
+        <span style="font-size: 1.2rem; color: var(--text-muted);">🔍</span>
+        <input 
+          type="text" 
+          class="search-modal-input" 
+          id="searchModalInput" 
+          placeholder="Tìm từ khóa, nguyên lý, câu trích dẫn hoặc chương (ví dụ: 8.47, pháo đài, Amor Fati)..."
+        >
+        <button class="btn-icon" id="closeSearchBtn" style="font-size: 1rem;">✕</button>
+      </div>
+      <div class="search-results-list" id="searchResultsList">
+        <!-- Dynamically populated by search engine -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Reading Settings Modal -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal-content settings-modal">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="font-size: 1.1rem; font-weight: 700;">Tùy Chỉnh Không Gian Đọc</h3>
+        <button class="btn-icon" id="closeSettingsBtn">✕</button>
+      </div>
+
+      <!-- Color Themes -->
+      <div class="settings-section">
+        <label class="settings-label">Màu Nền Trang Giấy</label>
+        <div class="theme-options-grid">
+          <button class="theme-option-btn active" data-theme="sepia">
+            <span class="theme-color-circle" style="background: #F5EFEB; border-color: #8C4328;"></span>
+            <span>Giấy mộc</span>
+          </button>
+          <button class="theme-option-btn" data-theme="light">
+            <span class="theme-color-circle" style="background: #FFFFFF; border-color: #CBD5E1;"></span>
+            <span>Sáng nhẹ</span>
+          </button>
+          <button class="theme-option-btn" data-theme="dark">
+            <span class="theme-color-circle" style="background: #18191D; border-color: #E5A93C;"></span>
+            <span>Khắc Kỷ</span>
+          </button>
+          <button class="theme-option-btn" data-theme="oled">
+            <span class="theme-color-circle" style="background: #000000; border-color: #555555;"></span>
+            <span>OLED Đêm</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Font Family -->
+      <div class="settings-section">
+        <label class="settings-label">Kiểu Chữ</label>
+        <div class="font-options-row">
+          <button class="font-option-btn active" data-font="serif" style="font-family: Georgia, serif;">
+            Chữ Sách (Serif)
+          </button>
+          <button class="font-option-btn" data-font="sans" style="font-family: sans-serif;">
+            Hiện Đại (Sans)
+          </button>
+          <button class="font-option-btn" data-font="mono" style="font-family: monospace;">
+            Đơn Cách (Mono)
+          </button>
+        </div>
+      </div>
+
+      <!-- Font Size -->
+      <div class="settings-section">
+        <label class="settings-label">Cỡ Chữ Đọc</label>
+        <div class="stepper-control">
+          <button class="stepper-btn" id="fontSizeDec">A−</button>
+          <span class="stepper-value" id="fontSizeDisplay">18px</span>
+          <button class="stepper-btn" id="fontSizeInc">A+</button>
+        </div>
+      </div>
+
+      <!-- Line Spacing -->
+      <div class="settings-section">
+        <label class="settings-label">Khoảng Cách Dòng</label>
+        <div class="font-options-row">
+          <button class="font-option-btn spacing-option-btn" data-spacing="1.5">Gọn gàng (1.5)</button>
+          <button class="font-option-btn spacing-option-btn active" data-spacing="1.75">Chuẩn mực (1.75)</button>
+          <button class="font-option-btn spacing-option-btn" data-spacing="1.95">Thoáng đãng (1.95)</button>
+        </div>
+      </div>
+
+      <!-- Reading Width -->
+      <div class="settings-section" style="margin-bottom: 0;">
+        <label class="settings-label">Độ Rộng Khung Chữ</label>
+        <div class="font-options-row">
+          <button class="font-option-btn width-option-btn" data-width="680">Hẹp (680px)</button>
+          <button class="font-option-btn width-option-btn active" data-width="780">Vừa vặn (780px)</button>
+          <button class="font-option-btn width-option-btn" data-width="920">Rộng (920px)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive 3D Flashcards Modal -->
+  <div class="modal-overlay" id="flashcardModal">
+    <div class="modal-content flashcard-modal-content">
+      <div class="flashcard-header">
+        <div>
+          <h3 style="font-size: 1.1rem; font-weight: 700;">🎴 40 Flashcard Ôn Tập Khắc Kỷ</h3>
+          <span style="font-size: 0.75rem; color: var(--text-muted);">Bấm vào thẻ hoặc phím Space để lật đáp án</span>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <select class="flashcard-group-select" id="flashcardGroupSelect">
+            <option value="all">Tất cả (40 thẻ)</option>
+            <option value="NHÓM 1">Nhóm 1: Khái niệm & Nền tảng (1-10)</option>
+            <option value="NHÓM 2">Nhóm 2: Quy tắc thực hành (11-20)</option>
+            <option value="NHÓM 3">Nhóm 3: Mô hình tư duy sâu (21-30)</option>
+            <option value="NHÓM 4">Nhóm 4: Chiêm nghiệm vô thường (31-40)</option>
+          </select>
+          <button class="btn-icon" id="closeFlashcardBtn">✕</button>
+        </div>
+      </div>
+
+      <!-- Flashcard 3D Card Area -->
+      <div class="flashcard-container">
+        <div class="flashcard-card" id="flashcardElement">
+          <!-- Front Face (Question) -->
+          <div class="flashcard-face flashcard-front">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span class="flashcard-card-badge" id="flashcardNumBadge">Thẻ #1</span>
+              <span style="font-size: 0.72rem; color: var(--text-muted);" id="flashcardGroupBadge">Khái niệm & Nền tảng</span>
+            </div>
+            <div class="flashcard-main-text" id="flashcardQuestion">
+              Đang tải câu hỏi...
+            </div>
+            <div class="flashcard-hint">
+              <span>💡 Bấm thẻ hoặc phím [Space] để xem câu trả lời</span>
+            </div>
+          </div>
+
+          <!-- Back Face (Answer) -->
+          <div class="flashcard-face flashcard-back">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span class="flashcard-card-badge" style="color: var(--accent-gold);">✨ ĐÁP ÁN & Ý NGHĨA</span>
+              <span style="font-size: 0.72rem; color: var(--text-muted);">Meditations</span>
+            </div>
+            <div class="flashcard-main-text" id="flashcardAnswer" style="font-size: 1.15rem;">
+              Đang tải đáp án...
+            </div>
+            <div class="flashcard-hint">
+              <span>💡 Bấm thẻ để lật lại câu hỏi</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Flashcard Controls -->
+      <div class="flashcard-controls">
+        <div class="flashcard-nav-group">
+          <button class="btn-flashcard-action" id="btnPrevCard">← Thẻ trước</button>
+          <button class="btn-flashcard-action" id="btnNextCard">Thẻ sau →</button>
+          <button class="btn-flashcard-action" id="btnShuffleCards" title="Trộn thứ tự ngẫu nhiên">🎲 Trộn thẻ</button>
+        </div>
+
+        <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary);" id="flashcardCounter">
+          1 / 40
+        </div>
+
+        <div>
+          <button class="btn-flashcard-action" id="btnCardMastered">
+            Đánh dấu đã thuộc
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts: Offline marked parser, Book data, and Application logic -->
+  <script src="lib/marked.min.js"></script>
+  <script src="book_data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
